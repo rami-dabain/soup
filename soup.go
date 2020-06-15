@@ -338,7 +338,7 @@ func (r Root) Text() string {
 	return buf.String()
 }
 
-// Text returns the string inside a non-nested element
+// Text returns the html of an element
 func (r Root) Html() (string, error) {
 	var buf bytes.Buffer
 	err := html.Render(&buf, r.Pointer)
