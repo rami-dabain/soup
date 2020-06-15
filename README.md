@@ -1,3 +1,8 @@
+Modifed version to do partial HTML parsing with special cases
+
+
+Original library can be found @ github.com/anaskhan96/soup 
+
 # soup
 [![Build Status](https://travis-ci.org/anaskhan96/soup.svg?branch=master)](https://travis-ci.org/anaskhan96/soup)
 [![GoDoc](https://godoc.org/github.com/anaskhan96/soup?status.svg)](https://godoc.org/github.com/anaskhan96/soup)

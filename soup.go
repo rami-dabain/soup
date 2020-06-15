@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"regexp"
 	"strings"
 
 	"golang.org/x/net/html"
@@ -158,6 +157,14 @@ func HTMLParse(s string) Root {
 		}
 	}
 	return Root{Pointer: r, NodeValue: r.Data}
+}
+
+func HTMLParseFragment(s string) Root {
+	//special case for <tr && <tbody
+	if strings.HasPrefix(s, "<tr") || strings.HasPrefix(s, "<tbody"){
+		s = "<table>" + s + "</table>"
+	}
+	return HTMLParse(s)
 }
 
 // Find finds the first occurrence of the given tag name,
@@ -311,56 +318,22 @@ func (r Root) Attrs() map[string]string {
 
 // Text returns the string inside a non-nested element
 func (r Root) Text() string {
-	k := r.Pointer.FirstChild
-checkNode:
-	if k != nil && k.Type != html.TextNode {
-		k = k.NextSibling
-		if k == nil {
-			if debug {
-				panic("No text node found")
-			}
-			return ""
-		}
-		goto checkNode
-	}
-	if k != nil {
-		r, _ := regexp.Compile(`^\s+$`)
-		if ok := r.MatchString(k.Data); ok {
-			k = k.NextSibling
-			if k == nil {
-				if debug {
-					panic("No text node found")
-				}
-				return ""
-			}
-			goto checkNode
-		}
-		return k.Data
-	}
-	return ""
-}
-
-// FullText returns the string inside even a nested element
-func (r Root) FullText() string {
 	var buf bytes.Buffer
 
+	// Slightly optimized vs calling Each: no single selection object created
 	var f func(*html.Node)
 	f = func(n *html.Node) {
-		if n == nil {
-			return
-		}
 		if n.Type == html.TextNode {
+			// Keep newlines and spaces, like jQuery
 			buf.WriteString(n.Data)
 		}
-		if n.Type == html.ElementNode {
-			f(n.FirstChild)
-		}
-		if n.NextSibling != nil {
-			f(n.NextSibling)
+		if n.FirstChild != nil {
+			for c := n.FirstChild; c != nil; c = c.NextSibling {
+				f(c)
+			}
 		}
 	}
-
-	f(r.Pointer.FirstChild)
+	f(r.Pointer)
 
 	return buf.String()
 }

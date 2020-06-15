@@ -197,23 +197,6 @@ func TestText(t *testing.T) {
 		t.Errorf("Wrong text: %s", li.Text())
 	}
 }
-func TestFullText(t *testing.T) {
-	// <li>To a <a href="hello.jsp">JSP page</a> right?</li>
-	li := doc.Find("ul").Find("li")
-
-	if li.FullText() != "To a JSP page right?" {
-		t.Errorf("Wrong text: %s", li.FullText())
-	}
-}
-
-func TestFullTextEmpty(t *testing.T) {
-	// <div id="5"><h1><span></span></h1></div>
-	h1 := doc.Find("div", "id", "5").Find("h1")
-
-	if h1.FullText() != "" {
-		t.Errorf("Wrong text: %s", h1.FullText())
-	}
-}
 
 func TestNewErrorReturnsInspectableError(t *testing.T) {
 	err := newError(ErrElementNotFound, "element not found")
