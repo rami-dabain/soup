@@ -338,6 +338,13 @@ func (r Root) Text() string {
 	return buf.String()
 }
 
+// Text returns the string inside a non-nested element
+func (r Root) Html() string {
+	var buf bytes.Buffer
+	html.Render(&buf, r.Pointer)
+	return buf.String()
+}
+
 func matchElementName(n *html.Node, name string) bool {
 	return name == "" || name == n.Data
 }
